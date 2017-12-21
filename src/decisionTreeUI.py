@@ -1,6 +1,7 @@
 import sys
 from myIO import MyIO
-
+from treeGeneration import TreeGeneration
+from anytree.render import RenderTree, AsciiStyle
 
 class DecisionTreeUI:
     """
@@ -24,7 +25,15 @@ class DecisionTreeUI:
         trainingData,trainingHeader,trainingClassArr = myIO.inputCSV(trainingPath)
         validationData, validationHeader, validationClassArr = myIO.inputCSV(validationPath)
         testingData, testingHeader, testingClassArr = myIO.inputCSV(testingPath)
+
+        #finding entropy of the class
+        treeGeneration=TreeGeneration()
+        trainingEntropyOfClass = treeGeneration.findEntropyOfClass(trainingClassArr)
+        #debug
+        print ('entropyOfClass = {} '.format(trainingEntropyOfClass))
+        #debug -ends
         
+
       
 #|------------------------decisionTreeUI -ends---------------------------------|    
 
