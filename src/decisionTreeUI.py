@@ -33,7 +33,18 @@ class DecisionTreeUI:
         print ('entropyOfClass = {} '.format(trainingEntropyOfClass))
         #debug -ends
         
-
+        #calling createDecisionTree() to get treeNodeList
+        treeNodeList = treeGeneration.createDecisionTree(dataArr = trainingData,\
+                                         headerList = trainingHeader,\
+                                         classArr = trainingClassArr,\
+                                         classEntropy = trainingEntropyOfClass,\
+                                         treeNode = [], \
+                                         rootNodeCounter = 0,\
+                                         parentNode = None)
+         
+        #debug
+        print(RenderTree(node = treeNodeList[0], style=AsciiStyle()))
+        #debug -ends
       
 #|------------------------decisionTreeUI -ends---------------------------------|    
 
