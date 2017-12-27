@@ -312,3 +312,182 @@ class TreeGeneration:
         #if entropy1 -ends             
         return class0, class1
 #|------------------------assignClassAndPath -ends-----------------------------| 
+#|-----------------------------------------------------------------------------|
+# findLeafNode
+#|-----------------------------------------------------------------------------|
+    def findLeafNode(self, treeNodeList):
+        """
+        given function finds leafNodes of tree
+        Input: treeNodeList (list of node type)
+        Output: leafNodeList (list of node type)
+        """
+        leafNodeList = []
+        for node in treeNodeList:
+            if node.is_leaf:
+                leafNodeList.append(node)
+            #if node.is_leaf -ends
+        #for node ends
+        return leafNodeList
+#|------------------------findLeafNode -ends----------------------------------|       
+#|-----------------------------------------------------------------------------|
+# createDecisionTree
+#|-----------------------------------------------------------------------------|
+    def createRandomDecisionTree(self, dataArr, headerList, classArr, classEntropy,\
+                            treeNode, rootNodeCounter, parentNode):
+        """
+        This function creates decision tree
+        """
+        copyHeaderList= copy.deepcopy(headerList)
+        #terminating condition
+        if len(headerList) == 0:
+            return treeNode 
+        #if -ends
+        dataRows, dataCols = np.shape(dataArr)
+        
+        #finding first split node (root node0
+        splittingNodeHeaderList=self.selectRandomAttribute(headerList)
+
+        #remove split node header and its data from modified lists
+        splittingNodeHeader = splittingNodeHeaderList[0]
+        splitNodeIndex = headerList.index(splittingNodeHeader)
+        
+        #for ends
+        sigmaEntropy, entropyOne, entropyZero, counterClassOne,\
+             counterClassZero=self.findAttributeEntropy(\
+                                        attributeArr = dataArr[:,splitNodeIndex],\
+                                        classArr = classArr,\
+                                        totalInstance = dataRows)
+        
+        
+
+ 
+        nodeClass0, nodeClass1 = self.assignClassAndPath(\
+                                                dataArr=dataArr,\
+                                                classArr=classArr,\
+                                                splitNodeIndex=splitNodeIndex,\
+                                                entropy0=entropyZero,\
+                                                entropy1=entropyOne)
+        #check for root node
+        if rootNodeCounter == 0:                
+            currentNode = Node(splittingNodeHeader, parent=None,\
+                                path0=None, path1 = None,\
+                                class0=nodeClass0, class1=nodeClass1,\
+                                instanceClass0 = counterClassZero,\
+                                instanceClass1 = counterClassOne)
+        else:
+            currentNode = Node(splittingNodeHeader, parent=parentNode, \
+                                path0=None, path1 = None,\
+                                class0=nodeClass0, class1=nodeClass1,\
+                                instanceClass0 = counterClassZero,\
+                                instanceClass1 = counterClassOne)
+        #if nodeCounter -ends
+        rootNodeCounter+=1
+        #creating treeNode
+        treeNode.append(currentNode)
+        
+        #linking current node with parent node
+        if (parentNode!=None):
+            parentNodeIndex = treeNode.index(parentNode)
+#             #debug
+#             print ('parentNodeIndex = {} '.format(parentNodeIndex))
+#             #debug -ends
+            if (treeNode[parentNodeIndex].class0==None and\
+                 treeNode[parentNodeIndex].path0==None):
+                treeNode[parentNodeIndex].path0=currentNode
+            elif(treeNode[parentNodeIndex].class1==None and\
+                 treeNode[parentNodeIndex].path1==None):
+                treeNode[parentNodeIndex].path1=currentNode  
+            #if -ends
+        #if parentNode -ends
+        
+        rows, cols = np.shape(dataArr)
+        headerList = copyHeaderList
+        headerList.remove(splittingNodeHeader) 
+        #check for entropyZero (left side of tree)
+        if(entropyZero != 0):
+            #adding all those rows who has 0 value in splitNode column in 
+            #dataArr; and taking respective class values and creating new 
+            #classArr0 and dataArr0
+            dataArr0 = np.empty((0,cols))
+            classArr0 = np.array([])
+            for index, data in enumerate(dataArr):
+                if data[splitNodeIndex]==0:
+                    dataArr0=np.append(arr = dataArr0, values = [data],axis = 0)
+                    classArr0=np.append(arr = classArr0, \
+                                            values = [classArr[index]], axis=0)
+                #if -ends
+            #for -ends
+            dataArr0 = np.delete(arr = dataArr0, obj=(splitNodeIndex), axis=1)
+#             #debug
+#             print ('dataArr0 = \n{} '.format(dataArr0))
+#             print ('classArr0 = \n{}'.format(classArr0))
+#             #debug -ends
+          
+            #call function recursively
+            self.createDecisionTree(dataArr0, headerList, classArr0, classEntropy,\
+                            treeNode,rootNodeCounter, parentNode = currentNode)              
+        #if entropyZero -ends
+#         #debug
+#         print ('headerList = {} '.format(headerList))
+#         #debug -ends 
+        #check for entropyOne (right side of tree)    
+        if(entropyOne != 0):
+            #adding all those rows who has 0 value in splitNode column in 
+            #dataArr; and taking respective class values and creating new 
+            #classArr0 and dataArr0
+            dataArr1 = np.empty((0,cols))
+            classArr1 = np.array([])
+            for index, data in enumerate(dataArr):
+                if data[splitNodeIndex]==1:
+                    dataArr1=np.append(arr = dataArr1, values = [data],axis = 0)
+                    classArr1=np.append(arr = classArr1, \
+                                            values = [classArr[index]], axis=0)
+                #if -ends
+            #for -ends
+            dataArr1 = np.delete(arr = dataArr1, obj=(splitNodeIndex), axis=1)
+#             #debug
+#             print ('dataArr1 = \n{} '.format(dataArr1))
+#             print ('classArr1 = \n{}'.format(classArr1))
+#             #debug -ends
+            #call function recursively
+            self.createDecisionTree(dataArr1, headerList, classArr1, classEntropy,\
+                            treeNode,rootNodeCounter, parentNode = currentNode)      
+        #if entropyOne -ends
+        return treeNode
+#|------------------------createDecisionTree -ends-----------------------------|    
+#|-----------------------------------------------------------------------------|
+# selectRandomAttribute
+#|-----------------------------------------------------------------------------|
+    def selectRandomAttribute(self, headerList):
+        """
+        given function selects a random attribute and returns its value
+        """
+        selectedRandomAttribute = random.sample(headerList, k=1)
+#         #debug
+#         print ('selectedRandomAttribute = {} '.format(selectedRandomAttribute))
+#         #debug -ends
+        return selectedRandomAttribute
+
+    
+#|------------------------selectRandomAttribute -ends--------------------------|
+
+#|-----------------------------------------------------------------------------|
+# calculateAverageDepth
+#|-----------------------------------------------------------------------------|
+    def calculateAverageDepth(self,actualTreeList):
+        """
+        This function calculates AverageDepth of the tree using following formula:
+        AverageDepth= Sum of depth of leaf nodes/Total number of leaf nodes
+        """
+        sum=0
+        
+        leafNodeList=self.findLeafNode(actualTreeList)
+        totalLeafNodes=len(leafNodeList)
+        for node in leafNodeList:
+            
+            depth=node.depth
+            sum=sum+depth
+            
+        averageDepth=sum/totalLeafNodes
+        return averageDepth
+#|------------------------calculateAverageDepth -ends----------------------------------|            

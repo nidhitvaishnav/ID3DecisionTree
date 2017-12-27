@@ -2,10 +2,9 @@ import sys
 from myIO import MyIO
 from treeGeneration import TreeGeneration
 from accuracyCalculation import AccuracyCalculation
-from pruningTree import PruningTree
 
 
-class DecisionTreeUI:
+class RandomDecisionTreeUI:
     """
     This has one UI method, which calls every methods and provides 
     the final output
@@ -36,14 +35,21 @@ class DecisionTreeUI:
 #         #debug -ends
 
         #calling createDecisionTree() to get treeNodeList
-        treeNodeList = treeGeneration.createDecisionTree(dataArr = trainingData,\
+#         treeNodeList = treeGeneration.createDecisionTree(dataArr = trainingData,\
+#                                          headerList = trainingHeader,\
+#                                          classArr = trainingClassArr,\
+#                                          classEntropy = trainingEntropyOfClass,\
+#                                          treeNode = [], \
+#                                          rootNodeCounter = 0,\
+#                                          parentNode = None)
+        treeNodeList = treeGeneration.createRandomDecisionTree(\
+                                         dataArr = trainingData,\
                                          headerList = trainingHeader,\
                                          classArr = trainingClassArr,\
                                          classEntropy = trainingEntropyOfClass,\
                                          treeNode = [], \
                                          rootNodeCounter = 0,\
                                          parentNode = None)
-         
 #         #debug
 #         print(RenderTree(node = treeNodeList[0], style=AsciiStyle()))
 #         #debug -ends
@@ -84,61 +90,69 @@ class DecisionTreeUI:
                                  accuracy = prePruningTestingAccuracy,\
                                  dataTypeStr = "testing")
        
-        pruningTree = PruningTree()
-        prunedTreeNodeList = pruningTree.findPrunedTree(\
-                                pruningFactor = pruningFactor,\
-                                treeNodeList = treeNodeList,\
-                                validationData = validationData,\
-                                validationHeader = validationHeader,\
-                                validationClassArr = validationClassArr,\
-                                initialvalidationAccuracy = \
-                                                    prePruningValidationAccuracy)
-        
-        
-        postPruningTrainingAccuracy = accuracyCalculation.findAccuracy(\
-                                                dataArr = trainingData,\
-                                                headerList = trainingHeader,\
-                                                classArr = trainingClassArr,\
-                                                treeNodeList = prunedTreeNodeList)
-        postPruningValidationAccuracy = accuracyCalculation.findAccuracy(\
-                                                dataArr = validationData,\
-                                                headerList = validationHeader,\
-                                                classArr = validationClassArr,\
-                                                treeNodeList = prunedTreeNodeList)
-        postPruningTestingAccuracy = accuracyCalculation.findAccuracy(\
-                                                dataArr = testingData,\
-                                                headerList = testingHeader,\
-                                                classArr = testingClassArr,\
-                                                treeNodeList = prunedTreeNodeList)
-        
-        #printing accuracy report
-        print ("-------------------------")
-        print ("post-Pruning accuracy")
-        print ("-------------------------")
-        myIO.printAccuracyReport(dataArr = trainingData,\
-                                 accuracy = postPruningTrainingAccuracy,\
-                                 dataTypeStr = "training",\
-                                 treeNodeList = prunedTreeNodeList)
-        myIO.printAccuracyReport(dataArr = validationData,\
-                                 accuracy = postPruningValidationAccuracy,\
-                                 dataTypeStr = "validation")
-        myIO.printAccuracyReport(dataArr = testingData,\
-                                 accuracy = postPruningTestingAccuracy,\
-                                 dataTypeStr = "testing")
-         
-        return treeNodeList, prunedTreeNodeList
+#         pruningTree = PruningTree()
+#         prunedTreeNodeList = pruningTree.findPrunedTree(\
+#                                 pruningFactor = pruningFactor,\
+#                                 treeNodeList = treeNodeList,\
+#                                 validationData = validationData,\
+#                                 validationHeader = validationHeader,\
+#                                 validationClassArr = validationClassArr,\
+#                                 initialvalidationAccuracy = \
+#                                                     prePruningValidationAccuracy)
+#         
+#         
+#         postPruningTrainingAccuracy = accuracyCalculation.findAccuracy(\
+#                                                 dataArr = trainingData,\
+#                                                 headerList = trainingHeader,\
+#                                                 classArr = trainingClassArr,\
+#                                                 treeNodeList = prunedTreeNodeList)
+#         postPruningValidationAccuracy = accuracyCalculation.findAccuracy(\
+#                                                 dataArr = validationData,\
+#                                                 headerList = validationHeader,\
+#                                                 classArr = validationClassArr,\
+#                                                 treeNodeList = prunedTreeNodeList)
+#         postPruningTestingAccuracy = accuracyCalculation.findAccuracy(\
+#                                                 dataArr = testingData,\
+#                                                 headerList = testingHeader,\
+#                                                 classArr = testingClassArr,\
+#                                                 treeNodeList = prunedTreeNodeList)
+#         
+#         #printing accuracy report
+#         print ("-------------------------")
+#         print ("post-Pruning accuracy")
+#         print ("-------------------------")
+#         myIO.printAccuracyReport(dataArr = trainingData,\
+#                                  accuracy = postPruningTrainingAccuracy,\
+#                                  dataTypeStr = "training",\
+#                                  treeNodeList = prunedTreeNodeList)
+#         myIO.printAccuracyReport(dataArr = validationData,\
+#                                  accuracy = postPruningValidationAccuracy,\
+#                                  dataTypeStr = "validation")
+#         myIO.printAccuracyReport(dataArr = testingData,\
+#                                  accuracy = postPruningTestingAccuracy,\
+#                                  dataTypeStr = "testing")
+#          
+        return treeNodeList
+    
+   
+      
       
 #|------------------------decisionTreeUI -ends---------------------------------|    
 
 
 if __name__ == '__main__':
-    if len(sys.argv)>1  :
+    if len(sys.argv)>1 and len(sys.argv)==4:
+        print('system argm = {}'.format(sys.argv))
+        trainingPath = sys.argv[1]
+        validationPath = sys.argv[2]
+        testingPath = sys.argv[3]
+        pruningFactor = None
+    elif len(sys.argv)==5:
         print('system argm = {}'.format(sys.argv))
         trainingPath = sys.argv[1]
         validationPath = sys.argv[2]
         testingPath = sys.argv[3]
         pruningFactor = float(sys.argv[4])
-        
     else: 
 #         trainingPath = '../tr/trDataset.csv'
         trainingPath = '../dataset/training_set.csv'
@@ -146,12 +160,13 @@ if __name__ == '__main__':
         testingPath = '../dataset/test_set.csv'
         pruningFactor = 0.1
     #if -ends        
-    decisionTree = DecisionTreeUI()
-    actualTreeList, prunedTreeList =decisionTree.decisionTreeUI(\
+    decisionTree = RandomDecisionTreeUI()
+    actualTreeList =decisionTree.decisionTreeUI(\
                                         trainingPath, validationPath,\
                                         testingPath,pruningFactor)
     treeGeneration= TreeGeneration()
     averageDepth=treeGeneration.calculateAverageDepth(actualTreeList)
-    print("Average depth of decision tree using ID3 {} ".format(averageDepth))
+    print("Average depth of decision tree using random splitting {} ".format(\
+                                                                averageDepth))
 #         print "no command line arguments specified. Please try again"
         

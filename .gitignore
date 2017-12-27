@@ -2,3 +2,5 @@ src/myIO.pyc
 .project
 .pydevproject
 src/treeGeneration.pyc
+src/accuracyCalculation.pyc
+src/pruningTree.pyc
