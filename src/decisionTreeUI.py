@@ -7,7 +7,7 @@ from pruningTree import PruningTree
 
 class DecisionTreeUI:
     """
-    This has one UI method, which calls every methods and provides 
+    This has one UI  method, which calls every methods and provides 
     the final output
     """
 #|-----------------------------------------------------------------------------|

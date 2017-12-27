@@ -6,7 +6,7 @@ from accuracyCalculation import AccuracyCalculation
 
 class RandomDecisionTreeUI:
     """
-    This has one UI method, which calls every methods and provides 
+    This has one UI method,  which calls every methods and provides 
     the final output
     """
 #|-----------------------------------------------------------------------------|
